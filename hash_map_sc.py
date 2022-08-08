@@ -89,10 +89,10 @@ class HashMap:
     # ------------------------------------------------------------------ #
 
     def put(self, key: str, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+          
+        hashed_key = self._hash_function(key)
+  		  hashed_key = hashed_key% self.get_capacity
+  		  self._buckets[hashed_key].insert(key, value)
 
     def empty_buckets(self) -> int:
         """
