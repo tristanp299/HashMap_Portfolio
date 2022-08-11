@@ -208,16 +208,24 @@ def find_mode(da: DynamicArray) -> (DynamicArray, int):
             map.set(da[i], 1)
     freq_arr = map.get_keys_and_values()
     mode, freq = 0, 0
+    new_dd = DynamicArray()
     print(freq_arr)
     for i in range(freq_arr.length()):
         if freq_arr[i] is None:
             continue
         else:
             m, f = freq_arr[i]
-            if f >= mode:
+
+            if f == mode:
+
                 mode = f
-                freq+=1
-    return (mode, freq)
+                new_dd.append(m)
+            elif f > mode:
+                mode = f
+                new_dd = DynamicArray()
+                new_dd.append(m)
+
+    return (new_dd, mode)
 
 
 
