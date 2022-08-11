@@ -1,8 +1,8 @@
-# Name:
-# OSU Email:
+# Name: Tristan Pereira
+# OSU Email: pereirtr@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
+# Assignment: Assignment 6 - Hashmap
+# Due Date: 08/10/2022
 # Description:
 
 
@@ -87,31 +87,48 @@ class HashMap:
     # ------------------------------------------------------------------ #
 
     def put(self, key: str, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        # remember, if the load factor is greater than or equal to 0.5,
-        # resize the table before putting the new key/value pair
-        pass
+        '''put function hashes the key string and inputs it in the correct place in the hashmap with its associated value'''
+
+        hash_key = self._hash_function(key)%self._capacity
+
+        if self.table_load()> .5:
+            self.resize_table(self._capacity*2)
+
+        i = 0
+        while(self._buckets[hash_key] is not None):
+            hash_key = hash_key+ i**2
+            i+=1
+        self._buckets[hash_key] = value
+
+
 
     def table_load(self) -> float:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        '''table_load function returns the load factor of the hash map'''
+
+        return self._size/self._capacity
 
     def empty_buckets(self) -> int:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        '''empty_buckets returns how many empty buckets there are in the hash map'''
+
+        empty = 0
+        for i in range(self._capacity):
+            if self._buckets[i] is None:
+                empty+=1
+
+        return empty
 
     def resize_table(self, new_capacity: int) -> None:
-        """
-        TODO: Write this implementation
-        """
-        # remember to rehash non-deleted entries into new table
-        pass
+        '''resize_tables '''
+
+        if new_capacity<self._size:
+            return
+        if self._is_prime(new_capacity) == False:
+            new_capacity = self._next_prime(new_capacity)
+        new_dd = DynamicArray()
+
+        for i in range(new_capacity):
+            hash_key = self._hash_function(self._buckets[i].key) % new_capacity
+
 
     def get(self, key: str) -> object:
         """
@@ -120,22 +137,28 @@ class HashMap:
         pass
 
     def contains_key(self, key: str) -> bool:
-        """
-        TODO: Write this implementation
-        """
-        pass
+
+        hash_key = self._hash_function(key)%self._capacity
+        if self._buckets[hash_key] is not None:
+            return True
+        return False
+
 
     def remove(self, key: str) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+
+        if self.contains_key(key) == False:
+            return
+        hash_key = self._hash_function(key)%self._capacity
+        self._buckets[hash_key] = None
+        self._size-=1
+
+
 
     def clear(self) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+
+        for i in range(0,self._capacity):
+            self._buckets[i] = None
+            self._size = 0
 
     def get_keys_and_values(self) -> DynamicArray:
         """

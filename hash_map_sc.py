@@ -1,8 +1,8 @@
-# Name:
-# OSU Email:
+# Name: Tristan Pereira
+# OSU Email: pereirtr@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
+# Assignment: Assignment 6 - Hashmap
+# Due Date: 08/10/2022
 # Description:
 
 
@@ -89,67 +89,140 @@ class HashMap:
     # ------------------------------------------------------------------ #
 
     def put(self, key: str, value: object) -> None:
-          
+        '''put function hashes the key string and inputs it in the correct place in the hashmap with its associated value'''
+
+        #mar = 0
+
         hashed_key = self._hash_function(key)
-  		  hashed_key = hashed_key% self.get_capacity
-  		  self._buckets[hashed_key].insert(key, value)
+        hashed_key = hashed_key% self.get_capacity()
+        llnode = self._buckets[hashed_key]
+        if self._buckets[hashed_key].length==0:
+            llnode.insert(key, value)
+        elif llnode.contains(key) is not None:
+            llnode.remove(key)
+            self._size-=1
+            llnode.insert(key, value)
+        else:
+            llnode.insert(key, value)
+        self._size+=1
 
     def empty_buckets(self) -> int:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        '''table_load function returns the load factor of the hash map'''
+
+        c = 0
+        for i in range(0, self._capacity):
+            if self._buckets[i].length() == 0:
+                c+=1
+        return c
 
     def table_load(self) -> float:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        '''empty_buckets returns how many empty buckets there are in the hash map'''
+
+        return self._size/self._capacity
 
     def clear(self) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        '''clear function emptys out the hash map and keeps the same capacity size'''
+
+        new_ll = LinkedList()
+        for i in range(0,self._capacity):
+            self._buckets[i] = new_ll
+            self._size = 0
 
     def resize_table(self, new_capacity: int) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        '''resize_table changes the capacity of the table and checks if the new capacity is less than one or if its a prime number.'''
+
+        if new_capacity<1:
+            return
+        if self._is_prime(new_capacity)== False:
+            new_capacity = self._next_prime(new_capacity)
+        new_dd = DynamicArray()
+        new_ll = LinkedList()
+
+        for i in range(new_capacity):
+            new_dd.append(LinkedList())
+
+        for i in range(0, self._capacity):
+            if self._buckets[i] is not None and self._buckets[i].length()>0:
+                for j in self._buckets[i]:
+                    new_ll.insert(j.key, j.value)
+        self._size = 0
+        self._capacity = new_capacity
+        self._buckets = new_dd
+
+        for i in new_ll:
+            self.put(i.key, i.value)
+
 
     def get(self, key: str) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+
+        if self.contains_key(key) == False:
+            return None
+        else:
+            hash_key = self._hash_function(key)
+            hash_key = hash_key%self._capacity
+            obj = self._buckets[hash_key].contains(key)
+            return obj.value
+
+    def set(self, key: str, value: int) -> None:
+
+        if self.contains_key(key) == False:
+            return None
+        else:
+            hash_key = self._hash_function(key)
+            hash_key = hash_key%self._capacity
+            self._buckets[hash_key].contains(key).value += value
 
     def contains_key(self, key: str) -> bool:
-        """
-        TODO: Write this implementation
-        """
-        pass
+
+        hash_key = self._hash_function(key)%self._capacity
+        if self._buckets[hash_key].contains(key):
+            return True
+        return False
 
     def remove(self, key: str) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+
+        hash_key = self._hash_function(key)%self._capacity
+        if self._buckets[hash_key].contains(key) is None:
+            return
+        else:
+            self._buckets[hash_key].remove(key)
+            self._size-=1
 
     def get_keys_and_values(self) -> DynamicArray:
-        """
-        TODO: Write this implementation
-        """
-        pass
+
+        new_dd = DynamicArray()
+        for i in range(0, self._capacity):
+            if self._buckets[i] is not None:
+                for j in self._buckets[i]:
+                    new_dd.append((j.key,j.value))
+        return new_dd
 
 
 def find_mode(da: DynamicArray) -> (DynamicArray, int):
-    """
-    TODO: Write this implementation
-    """
-    # if you'd like to use a hash map,
-    # use this instance of your Separate Chaining HashMap
+
     map = HashMap()
+    for i in range(0,da.length()):
+        if map.contains_key(da[i]) == False:
+            map.put(da[i], 1)
+        else:
+            map.set(da[i], 1)
+    freq_arr = map.get_keys_and_values()
+    mode, freq = 0, 0
+    print(freq_arr)
+    for i in range(freq_arr.length()):
+        if freq_arr[i] is None:
+            continue
+        else:
+            m, f = freq_arr[i]
+            if f >= mode:
+                mode = f
+                freq+=1
+    return (mode, freq)
+
+
+
+
+
 
 
 # ------------------- BASIC TESTING ---------------------------------------- #
